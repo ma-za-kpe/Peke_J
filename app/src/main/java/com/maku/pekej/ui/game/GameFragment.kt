@@ -34,18 +34,6 @@ class GameFragment : Fragment() {
         binding.gViewModel = gameviewModel
         binding.setLifecycleOwner(this)
 
-        // UI controllers are where you'll set up the observation relationship
-        gameviewModel.score.observe(this, Observer { newScore ->
-
-            binding.scoreText.text = newScore.toString()
-
-        })
-
-//        gameviewModel.word.observe(this, Observer { newWord ->
-//
-//            binding.imageView2 = newWord.toString()
-//
-//        })
 
         return binding.root
     }
