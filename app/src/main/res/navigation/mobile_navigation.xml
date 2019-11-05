@@ -24,6 +24,23 @@
         android:id="@+id/gameFragment"
         android:name="com.maku.pekej.ui.game.GameFragment"
         android:label="game_fragment"
-        tools:layout="@layout/game_fragment" />
+        tools:layout="@layout/game_fragment" >
+        <action
+            android:id="@+id/action_gameFragment_to_scoreFragment"
+            app:destination="@id/scoreFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/scoreFragment"
+        android:name="com.maku.pekej.ui.score.ScoreFragment"
+        android:label="ScoreFragment"
+        tools:layout="@layout/score_fragment" >
+        <argument
+            android:name="score"
+            android:defaultValue="0"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_restart"
+            app:destination="@+id/gameFragment" />
+    </fragment>
 
 </navigation>
