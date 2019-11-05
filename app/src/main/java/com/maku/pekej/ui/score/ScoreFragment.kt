@@ -57,6 +57,10 @@ class ScoreFragment : Fragment() {
             }
         })
 
+        //The complete onClickListener with Navigation using createNavigateOnClickListener
+        binding.button.setOnClickListener(
+            Navigation.createNavigateOnClickListener(R.id.action_scoreFragment_to_nav_home))
+
         return binding.root
     }
 

@@ -14,8 +14,22 @@ import androidx.annotation.RequiresApi
 import com.squareup.picasso.Picasso
 
 
+//vibrations constants
+private val CORRECT_BUZZ_PATTERN = longArrayOf(100, 100, 100, 100, 100, 100)
+private val PANIC_BUZZ_PATTERN = longArrayOf(0, 200)
+private val GAME_OVER_BUZZ_PATTERN = longArrayOf(0, 2000)
+private val NO_BUZZ_PATTERN = longArrayOf(0)
+
 class GameViewModel : ViewModel() {
 
+    //This enum will represent the different types of buzzing that can occur:
+    enum class BuzzType(val pattern: LongArray) {
+        CORRECT(CORRECT_BUZZ_PATTERN),
+        GAME_OVER(GAME_OVER_BUZZ_PATTERN),
+        COUNTDOWN_PANIC(PANIC_BUZZ_PATTERN),
+        NO_BUZZ(NO_BUZZ_PATTERN)
+    }
+    //timer
     companion object {
         // These represent different important times
         // This is when the game is over
@@ -24,9 +38,17 @@ class GameViewModel : ViewModel() {
         const val ONE_SECOND = 1000L
         // This is the total time of the game
         const val COUNTDOWN_TIME = 10000L
+
+        // This is the time when the phone will start buzzing each second
+        private const val COUNTDOWN_PANIC_SECONDS = 10L
     }
 
     private val timer: CountDownTimer
+
+    // Event that triggers the phone to buzz using different patterns, determined by BuzzType
+    private val _eventBuzz = MutableLiveData<BuzzType>()
+    val eventBuzz: LiveData<BuzzType>
+        get() = _eventBuzz
 
     private val _currentTime = MutableLiveData<Long>()
     val currentTime: LiveData<Long>
@@ -77,11 +99,15 @@ class GameViewModel : ViewModel() {
             override fun onTick(millisUntilFinished: Long) {
                 // TODO implement what should happen each tick of the timer
                 _currentTime.value = (millisUntilFinished / ONE_SECOND)
+                if (millisUntilFinished / ONE_SECOND <= COUNTDOWN_PANIC_SECONDS) {
+                    _eventBuzz.value = BuzzType.COUNTDOWN_PANIC
+                }
             }
 
             override fun onFinish() {
                 // TODO implement what should happen when the timer finishes
                 _currentTime.value = DONE
+                _eventBuzz.value = BuzzType.GAME_OVER
                 _eventGameFinish.value = true
             }
         }
@@ -154,6 +180,7 @@ class GameViewModel : ViewModel() {
 
     fun onCorrect() {
         _score.value = (score.value)?.plus(1)
+        _eventBuzz.value = BuzzType.CORRECT
         nextWord()
         nextimage()
     }
@@ -164,8 +191,11 @@ class GameViewModel : ViewModel() {
         _eventGameFinish.value = false
     }
 
+    fun onBuzzComplete() {
+        _eventBuzz.value = BuzzType.NO_BUZZ
+    }
     override fun onCleared() {
-        Timber.i("Gameviewmodel destroyed ...")
+        Timber.i("Game viewmodel destroyed ...")
         super.onCleared()
         timer.cancel()
     }
