@@ -5,27 +5,31 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.Navigation
 import com.maku.pekej.R
+import com.maku.pekej.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
 
-    private lateinit var homeViewModel: HomeViewModel
+    private lateinit var binding: FragmentHomeBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        homeViewModel =
-            ViewModelProviders.of(this).get(HomeViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_home, container, false)
-        val textView: TextView = root.findViewById(R.id.text_home)
-        homeViewModel.text.observe(this, Observer {
-            textView.text = it
-        })
-        return root
+        // Inflate the layout for this fragment
+        binding = DataBindingUtil.inflate(
+            inflater, R.layout.fragment_home, container, false)
+
+        //The complete onClickListener with Navigation using createNavigateOnClickListener
+        binding.playGameButton.setOnClickListener(
+            Navigation.createNavigateOnClickListener(R.id.action_nav_home_to_gameFragment))
+
+        return binding.root
     }
 }
